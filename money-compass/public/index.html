@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Money Compass — Know Your Numbers</title>
+<style>
+  :root {
+    --bg: #f1ece1;
+    --panel: #fdfaf3;
+    --ink: #2b2a28;
+    --muted: #6f6a5e;
+    --line: #2b2a28;
+    --accent: #c97b4a;
+    --accent2: #6f8f7a;
+    --accent3: #d9b65a;
+    --danger: #b5544a;
+    --warning: #c98a3a;
+    --good: #6f8f7a;
+    --info: #6a82a8;
+    --shadow: 6px 6px 0 var(--ink);
+    --shadow-sm: 4px 4px 0 var(--ink);
+    --font-display: 'Georgia', 'Times New Roman', serif;
+    --font-body: 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    background-image: radial-gradient(circle at 1px 1px, rgba(43,42,40,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  header {
+    padding: 2.2rem 1.5rem 1.6rem;
+    text-align: center;
+    border-bottom: 3px solid var(--line);
+    background: var(--panel);
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    margin: 0 0 0.4rem;
+    letter-spacing: 0.5px;
+    text-transform: lowercase;
+  }
+  header h1 span {
+    background: var(--accent3);
+    padding: 0 0.3rem;
+    border: 3px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+    transform: rotate(-1.5deg);
+  }
+  header p {
+    color: var(--muted);
+    margin: 0.6rem 0 0;
+    font-size: 0.95rem;
+  }
+
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 1.6rem 1.2rem 3rem;
+  }
+
+  nav.tabs {
+    display: flex;
+    gap: 0.7rem;
+    margin-bottom: 1.6rem;
+    flex-wrap: wrap;
+  }
+  nav.tabs button {
+    background: var(--panel);
+    border: 3px solid var(--line);
+    color: var(--ink);
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  nav.tabs button:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  nav.tabs button.active {
+    background: var(--accent);
+    color: var(--panel);
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  section.panel {
+    background: var(--panel);
+    border: 3px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 1.6rem;
+    display: none;
+  }
+  section.panel.active { display: block; }
+
+  h2 {
+    font-family: var(--font-display);
+    margin-top: 0;
+    font-size: 1.5rem;
+    border-bottom: 3px solid var(--line);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin: 1.6rem 0 0.8rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  input {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    border-radius: 3px;
+    border: 2px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-family: var(--font-mono);
+  }
+  input:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--accent2);
+    transform: translate(-1px, -1px);
+  }
+  input::placeholder { color: #b6b0a3; }
+
+  button.primary {
+    background: var(--accent);
+    color: var(--panel);
+    border: 3px solid var(--line);
+    padding: 0.75rem 1.6rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  button.primary:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  button.primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
+  .results { margin-top: 1.8rem; }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    margin-bottom: 1.4rem;
+    flex-wrap: wrap;
+  }
+  .score-circle {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    background: var(--accent3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.7rem; font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .score-row strong {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.9rem;
+    margin-bottom: 1.4rem;
+  }
+  .stat-card {
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 4px;
+    padding: 0.85rem;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .stat-card .label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+  }
+  .stat-card .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    font-family: var(--font-display);
+  }
+
+  .bar-row { margin-bottom: 0.9rem; }
+  .bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 700;
+  }
+  .bar-track {
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 3px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; background: var(--accent2); }
+
+  .insight {
+    border: 2px solid var(--line);
+    border-left: 6px solid var(--info);
+    background: var(--bg);
+    padding: 0.9rem 1.1rem;
+    border-radius: 3px;
+    margin-bottom: 0.7rem;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .insight.danger { border-left-color: var(--danger); }
+  .insight.warning { border-left-color: var(--warning); }
+  .insight.good { border-left-color: var(--good); }
+  .insight h4 {
+    margin: 0 0 0.35rem;
+    font-size: 0.98rem;
+    font-family: var(--font-display);
+  }
+  .insight p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+
+  .lesson {
+    margin-bottom: 1.1rem;
+    padding: 1rem;
+    border: 2px solid var(--line);
+    border-radius: 3px;
+    background: var(--bg);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .lesson h4 {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+  .lesson p { font-size: 0.9rem; color: var(--muted); margin: 0; }
+  .lesson .your-number {
+    color: var(--ink);
+    font-weight: 700;
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    background: var(--accent3);
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border: 2px solid var(--line);
+    border-radius: 3px;
+  }
+
+  .glossary-search {
+    margin-bottom: 1.2rem;
+    font-family: var(--font-mono);
+  }
+  .glossary-term {
+    padding: 0.8rem 0;
+    border-bottom: 2px dashed var(--line);
+  }
+  .glossary-term:last-child { border-bottom: none; }
+  .glossary-term dt {
+    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+  }
+  .glossary-term dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .quiz-q {
+    margin-bottom: 1.4rem;
+    padding: 1rem;
+    border: 2px solid var(--line);
+    border-radius: 3px;
+    background: var(--bg);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .quiz-q p.qtext {
+    font-weight: 700;
+    margin: 0 0 0.7rem;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+  }
+  .quiz-options label {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.45rem 0.5rem; border-radius: 3px; cursor: pointer;
+    color: var(--ink); font-size: 0.9rem;
+  }
+  .quiz-options label:hover { background: var(--panel); }
+  .quiz-options input {
+    width: auto;
+    accent-color: var(--accent);
+  }
+  .quiz-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .quiz-feedback.correct { color: var(--good); }
+  .quiz-feedback.incorrect { color: var(--danger); }
+
+  #quizResult h3 {
+    display: inline-block;
+    background: var(--accent3);
+    border: 3px solid var(--line);
+    padding: 0.5rem 1rem;
+    box-shadow: var(--shadow-sm);
+    transform: rotate(-1deg);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 2rem 1rem;
+    border-top: 3px solid var(--line);
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    .score-row { flex-direction: column; align-items: flex-start; }
+    :root {
+      --shadow: 4px 4px 0 var(--ink);
+      --shadow-sm: 3px 3px 0 var(--ink);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>money <span>compass</span></h1>
+  <p>plug in your real numbers — get plain-english feedback, not a template</p>
+</header>
+
+<main>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="budget">Budget Check</button>
+    <button class="tab-btn" data-tab="glossary">Glossary</button>
+    <button class="tab-btn" data-tab="quiz">Quiz</button>
+  </nav>
+
+  <section class="panel active" id="budget">
+    <h2>1. Enter your monthly numbers</h2>
+    <div class="grid">
+      <div>
+        <label for="income">Net monthly income ($)</label>
+        <input type="number" id="income" placeholder="3500" min="0" />
+      </div>
+      <div>
+        <label for="rent">Rent / mortgage</label>
+        <input type="number" id="rent" placeholder="1200" min="0" />
+      </div>
+      <div>
+        <label for="utilities">Utilities</label>
+        <input type="number" id="utilities" placeholder="150" min="0" />
+      </div>
+      <div>
+        <label for="groceries">Groceries</label>
+        <input type="number" id="groceries" placeholder="350" min="0" />
+      </div>
+      <div>
+        <label for="transport">Transport</label>
+        <input type="number" id="transport" placeholder="200" min="0" />
+      </div>
+      <div>
+        <label for="insurance">Insurance</label>
+        <input type="number" id="insurance" placeholder="100" min="0" />
+      </div>
+      <div>
+        <label for="minDebtPayments">Minimum debt payments</label>
+        <input type="number" id="minDebtPayments" placeholder="250" min="0" />
+      </div>
+      <div>
+        <label for="subscriptions">Subscriptions</label>
+        <input type="number" id="subscriptions" placeholder="40" min="0" />
+      </div>
+      <div>
+        <label for="dining">Dining out</label>
+        <input type="number" id="dining" placeholder="200" min="0" />
+      </div>
+      <div>
+        <label for="entertainment">Entertainment</label>
+        <input type="number" id="entertainment" placeholder="100" min="0" />
+      </div>
+      <div>
+        <label for="shopping">Shopping</label>
+        <input type="number" id="shopping" placeholder="150" min="0" />
+      </div>
+      <div>
+        <label for="savings">Savings contribution</label>
+        <input type="number" id="savings" placeholder="300" min="0" />
+      </div>
+      <div>
+        <label for="totalDebt">Total outstanding debt</label>
+        <input type="number" id="totalDebt" placeholder="8000" min="0" />
+      </div>
+      <div>
+        <label for="emergencyFund">Emergency fund balance</label>
+        <input type="number" id="emergencyFund" placeholder="1000" min="0" />
+      </div>
+    </div>
+    <button class="primary" id="analyzeBtn">Analyze my finances</button>
+
+    <div class="results" id="results" style="display:none;"></div>
+  </section>
+
+  <section class="panel" id="glossary">
+    <h2>Finance terms, explained simply</h2>
+    <input class="glossary-search" id="glossarySearch" placeholder="search terms (e.g. 'compound interest')" />
+    <dl id="glossaryList"></dl>
+  </section>
+
+  <section class="panel" id="quiz">
+    <h2>Quick knowledge check</h2>
+    <div id="quizContainer"></div>
+    <button class="primary" id="submitQuiz">Submit answers</button>
+    <div id="quizResult"></div>
+  </section>
+</main>
+
+<footer>built for MLH Global Hack Week — Financial Literacy challenge</footer>
+
+<script>
+const API = '/api';
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+const EXPENSE_FIELDS = [
+  'rent','utilities','groceries','transport','insurance',
+  'minDebtPayments','subscriptions','dining','entertainment','shopping','savings'
+];
+
+document.getElementById('analyzeBtn').addEventListener('click', async () => {
+  const income = parseFloat(document.getElementById('income').value) || 0;
+  const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
+  const emergencyFund = parseFloat(document.getElementById('emergencyFund').value) || 0;
+
+  const expenses = {};
+  EXPENSE_FIELDS.forEach(f => {
+    expenses[f] = parseFloat(document.getElementById(f).value) || 0;
+  });
+
+  const res = await fetch(`${API}/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ income, expenses, totalDebt, emergencyFund })
+  });
+  const data = await res.json();
+  renderResults(data);
+});
+
+function renderResults(data) {
+  const el = document.getElementById('results');
+  el.style.display = 'block';
+
+  const { summary, rule503020, score, insights, lessons } = data;
+
+  let html = `
+    <div class="score-row">
+      <div class="score-circle">${score}</div>
+      <div>
+        <strong>Financial Health Score</strong><br/>
+        <span style="color:var(--muted); font-size:0.9rem;">out of 100 — based on savings rate, emergency fund, debt load, and budget balance</span>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="label">Cash flow</div><div class="value">$${summary.cashFlow.toFixed(2)}</div></div>
+      <div class="stat-card"><div class="label">Savings rate</div><div class="value">${summary.savingsRate}%</div></div>
+      <div class="stat-card"><div class="label">Emergency runway</div><div class="value">${summary.runwayMonths} mo</div></div>
+      <div class="stat-card"><div class="label">Debt-to-income</div><div class="value">${summary.dti}%</div></div>
+    </div>
+
+    <h3>50/30/20 Rule — Your Actual Split</h3>
+  `;
+
+  ['needs','wants','savingsDebt'].forEach(key => {
+    const actual = rule503020.actual[key];
+    const target = rule503020.target[key];
+    const niceName = key === 'needs' ? 'Needs' : key === 'wants' ? 'Wants' : 'Savings & Debt Payoff';
+    html += `
+      <div class="bar-row">
+        <div class="bar-label"><span>${niceName}</span><span>${actual}% (target ${target}%)</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.min(actual,100)}%"></div></div>
+      </div>
+    `;
+  });
+
+  html += `<h3>Insights</h3>`;
+  insights.forEach(i => {
+    html += `<div class="insight ${i.level}"><h4>${i.title}</h4><p>${i.detail}</p></div>`;
+  });
+
+  html += `<h3>Why these numbers matter</h3>`;
+  lessons.forEach(l => {
+    html += `
+      <div class="lesson">
+        <h4>${l.topic}</h4>
+        <p>${l.explanation}</p>
+        <div class="your-number">${l.yourNumber}</div>
+      </div>
+    `;
+  });
+
+  el.innerHTML = html;
+}
+
+let glossaryData = {};
+async function loadGlossary() {
+  const res = await fetch(`${API}/glossary`);
+  const data = await res.json();
+  glossaryData = data.terms;
+  renderGlossary(glossaryData);
+}
+function renderGlossary(terms) {
+  const list = document.getElementById('glossaryList');
+  list.innerHTML = Object.entries(terms).map(([term, def]) => `
+    <div class="glossary-term">
+      <dt>${term}</dt>
+      <dd>${def}</dd>
+    </div>
+  `).join('');
+}
+document.getElementById('glossarySearch').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  const filtered = Object.fromEntries(
+    Object.entries(glossaryData).filter(([term, def]) =>
+      term.toLowerCase().includes(q) || def.toLowerCase().includes(q)
+    )
+  );
+  renderGlossary(filtered);
+});
+loadGlossary();
+
+let quizQuestions = [];
+async function loadQuiz() {
+  const res = await fetch(`${API}/quiz`);
+  const data = await res.json();
+  quizQuestions = data.questions;
+  renderQuiz();
+}
+function renderQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = quizQuestions.map(q => `
+    <div class="quiz-q" data-id="${q.id}">
+      <p class="qtext">${q.question}</p>
+      <div class="quiz-options">
+        ${q.options.map((opt, i) => `
+          <label>
+            <input type="radio" name="${q.id}" value="${i}" />
+            ${opt}
+          </label>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="feedback-${q.id}"></div>
+    </div>
+  `).join('');
+}
+document.getElementById('submitQuiz').addEventListener('click', async () => {
+  const answers = {};
+  quizQuestions.forEach(q => {
+    const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+    if (selected) answers[q.id] = parseInt(selected.value, 10);
+  });
+
+  const res = await fetch(`${API}/quiz/grade`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers })
+  });
+  const data = await res.json();
+
+  data.results.forEach(r => {
+    const fb = document.getElementById(`feedback-${r.id}`);
+    fb.textContent = (r.correct ? '✓ Correct. ' : '✗ Incorrect. ') + r.explanation;
+    fb.className = 'quiz-feedback ' + (r.correct ? 'correct' : 'incorrect');
+  });
+
+  document.getElementById('quizResult').innerHTML =
+    `<h3 style="margin-top:1rem;">Score: ${data.score} / ${data.total}</h3>`;
+});
+loadQuiz();
+</script>
+
+</body>
+</html>
