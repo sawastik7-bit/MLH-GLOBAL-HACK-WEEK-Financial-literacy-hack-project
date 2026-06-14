@@ -5,7 +5,7 @@
 
 <img width="1866" height="902" alt="Screenshot 2026-06-14 103648" src="https://github.com/user-attachments/assets/b4919b9a-4449-49e2-aca7-7b41a6a024a9" />
 
-<img width="1866" height="902" alt="Screenshot 2026-06-14 103648" src="https://github.com/user-attachments/assets/b0716d17-c75f-4324-ae7f-b156e764ec5a" />
+
 
 A backend-driven personal finance literacy tool built for MLH Global Hack Week.
 
