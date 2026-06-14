@@ -1,0 +1,2 @@
+# MLH-GLOBAL-HACK-WEEK-Financial-literacy-hack-project
+Money Compass Finance Literacy Tool A Node.js/Express app that turns your real budget numbers into a financial health score, with  savings rate, emergency fund runway, debt-to-income ratio, and a 50/30/20 breakdown. Get plain-English insights tailored to your numbers, search a finance glossary, and test your knowledge with an interactive quiz. 
